@@ -3,12 +3,10 @@ package com.djs.android.lightstrandcontrol;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import com.djs.anroid.lightstrandcontrol.R;
 import com.djs.lightStrandClient.ILSClientListener;
 import com.djs.lightStrandClient.LSClient;
 import com.djs.lightStrandClient.LightCode;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -62,6 +60,7 @@ public class ControlFragment extends Fragment implements ILSClientListener
 	protected static String IPKEY 	= "ip";
 	protected static String PORTKEY = "port";
 		
+	protected static int UDPRCV_TIMEOUT = 30 * 1000;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -120,6 +119,7 @@ public class ControlFragment extends Fragment implements ILSClientListener
 				if (lightStrandClient.IsConnected())
 				{
 					lightStrandClient.disconnect();										
+					UpdateButtons();
 				}
 				else
 				{
@@ -401,6 +401,12 @@ public class ControlFragment extends Fragment implements ILSClientListener
 	
 	protected void SendCode(LightCode code)
 	{
+		if (lightStrandClient.IsSending())
+		{
+			SLog.Info("NOT sending " + code.toString() + ", there is still a code being sent.");
+			return;
+		}
+		
 		SLog.Debug("Sending " + code.toString() + "...");
 		Vibrate_ButtonPressed();
 		lightStrandClient.SendCode(code);
@@ -412,39 +418,43 @@ public class ControlFragment extends Fragment implements ILSClientListener
 		// Vibrate for 500 milliseconds
 		v.vibrate(100);
 	}
+		
 	
 	protected void Connect()
 	{
 		
 		
 		String ipStr 	= MyIPEditText.getText().toString();
-		String portStr = MyPortEditText.getText().toString();
+		String portStr  = MyPortEditText.getText().toString();
 		
-		if (lightStrandClient.IsConnected() || ipStr.length() <= 0 || portStr.length() <= 0)
+		if (lightStrandClient.IsConnected())
 		{			
 			return;		
 		}
-		
+				
 		MyDialog = new ProgressDialog(getActivity());
 		MyDialog.setIndeterminate(true);		
 		MyDialog.setCancelable(false);
 		MyDialog.setMessage(getString(R.string.connection));
 		MyDialog.show();
 		
+		//if we don't have an IP for the device yet, try to 
+		//listen for the UDP broadcast.
+		if (ipStr.length() <= 0 || portStr.length() <= 0)
+		{
+			lightStrandClient.AsyncListenForUDPHeartBeat();
+			return;
+		}
+		
 		try
 		{
-			InetAddress ip 		= Inet4Address.getByName(ipStr);
 			int 		port 	= Integer.valueOf(portStr);
 			
-			lightStrandClient.connect(port, ip);
+			lightStrandClient.asyncConnect(port, ipStr);
 		} 
 		catch (NumberFormatException e)
 		{
 			Toast.makeText(getActivity(), "Unable to connect to arduino, bad port #", Toast.LENGTH_LONG).show();
-		}
-		catch (UnknownHostException e)
-		{
-			Toast.makeText(getActivity(), "Unable to connect to arduino, bad IP", Toast.LENGTH_LONG).show();				
 		}	
 	}
 	
@@ -519,8 +529,7 @@ public class ControlFragment extends Fragment implements ILSClientListener
 			MyDialog.cancel();
 			MyDialog = null;
 		}
-		
-		
+					
 		SLog.Error("Failed to connect to the light strand : " + msg);	
 		
 		if (isVisible())
@@ -529,23 +538,9 @@ public class ControlFragment extends Fragment implements ILSClientListener
 			
 			UpdateButtons();
 		}
-	}
-
-	@Override
-	public void OnDisconnectSuccess()
-	{
-		SLog.Debug("Disconnected from light strand");
 		
-		UpdateButtons();
-	}
-
-	@Override
-	public void OnDisconnectFailed(String msg)
-	{
-		SLog.Error("There was an error disconnecting from the light strand : " + msg);
-		
-		UpdateButtons();
-		
+		//try listening for UDP Msgs broadcast by the light strand device
+		lightStrandClient.AsyncListenForUDPHeartBeat();
 	}
 
 	@Override
@@ -564,5 +559,64 @@ public class ControlFragment extends Fragment implements ILSClientListener
 	public void OnLog(String msg)
 	{
 		SLog.Debug(msg);	
+	}
+
+	@Override
+	public void OnUDPBroadcastReceived(InetAddress address, int port)
+	{
+		if (MyDialog != null && MyDialog.isShowing())
+		{
+			MyDialog.cancel();
+			MyDialog = null;
+		}
+		
+		if (address == null )
+		{
+			return;
+		}		
+		
+		SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(getActivity());
+		Editor ed = prefs.edit();
+		ed.putString(IPKEY, address.getHostAddress());
+		ed.putString(PORTKEY, String.valueOf(port) );
+		ed.commit();
+		
+		MyIPEditText.setText(address.getHostAddress());
+		MyPortEditText.setText(String.valueOf(port) );
+		
+		Connect();
+	}
+
+	@Override
+	public void OnUDPBroadcastFailure(String msg)
+	{
+		if (MyDialog != null && MyDialog.isShowing())
+		{
+			MyDialog.cancel();
+			MyDialog = null;
+		}
+		
+		String errorMSG = "Failure while listening for udp heart beat :" + msg;
+		
+		SLog.Error(errorMSG);
+		
+		Toast.makeText(getActivity(), errorMSG, Toast.LENGTH_LONG).show();
+		
+	}
+
+	@Override
+	public void OnUDPBroadcastTimeout()
+	{
+		if (MyDialog != null && MyDialog.isShowing())
+		{
+			MyDialog.cancel();
+			MyDialog = null;
+		}
+		
+		String errorMSG = "No UDP heart beat heard within " + LSClient.UDP_RCV_TIMEOUT + "ms";
+		
+		SLog.Error(errorMSG);
+		
+		Toast.makeText(getActivity(), errorMSG, Toast.LENGTH_LONG).show();		
 	}
 }

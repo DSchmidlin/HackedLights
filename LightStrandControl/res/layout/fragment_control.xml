@@ -12,6 +12,7 @@
     <RelativeLayout android:layout_width="fill_parent"
         android:orientation="horizontal"
         android:layout_height="48dip"
+        android:visibility="gone"
         android:layout_weight="0.142">
         
         <Button android:id="@+id/buttonconnection"

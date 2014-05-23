@@ -20,7 +20,9 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ
 #define WLAN_PASS       "DaveISGreat!HeGaveUsChocolateCake1234"
 #define WLAN_SECURITY   WLAN_SEC_WPA2// Security can be WLAN_SEC_UNSEC, WLAN_SEC_WEP, WLAN_SEC_WPA or WLAN_SEC_WPA2
 
-#define LISTEN_PORT     5000    // What TCP port to listen on for connections.
+#define LISTEN_PORT     5000  // What TCP port to listen on for connections.
+#define MINUPDATETIME   5000 //milliseconds between UDP heart beats
+unsigned long lastupdate;
      
 IRsend irsend;
 prog_uint16_t power_off[] PROGMEM            = { 8967, 4497, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 1683, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 552, 1683, 552, 1683, 552, 1683, 552, 39996, 8967, 2261, 552 };                                         
@@ -55,8 +57,68 @@ void setup(void)
   Serial.begin(9600);
   Serial.println(F("Hello, CC3000!\n")); 
 
-  Serial.print("Free RAM: "); Serial.println(getFreeRam(), DEC);
+  Serial.print(F("Free RAM: ")); Serial.println(getFreeRam(), DEC);
   
+  ConnectWifi();
+  
+  Serial.println(F("Resetting Light Strand"));
+  SendIRCommand( 0 );
+}
+
+void loop(void)
+{
+  if (cc3000.checkConnected() == false)
+  {
+     ConnectWifi();
+  }
+  
+  unsigned long time = millis();
+  if ( (time - lastupdate) > MINUPDATETIME )
+  {
+    SendUDPHeartBeat();
+    
+    lastupdate = time;
+  }   
+  
+  // Try to get a client which is connected.
+  Adafruit_CC3000_ClientRef client = lightStrandServer.available();
+  if (client) 
+  {
+     Serial.println(F("Client connected"));
+    
+     // Check if there is data available to read.
+     if (client.available() > 0) 
+     {
+       // Read a byte and write it to all clients.
+       uint8_t code = client.read();
+       Serial.print(F("Client sent \"")); Serial.print(code,DEC); Serial.println(F("\""));
+       
+       SendIRCommand( code );       
+       
+       client.close();
+     }
+  }
+}
+
+void SendUDPHeartBeat()
+{
+  unsigned long ip;
+  uint16_t udpport = 5000;
+  
+  if(cc3000.getHostByName("255.255.255.255", &ip)) 
+  {
+      Adafruit_CC3000_Client udpClient = cc3000.connectUDP(ip,  udpport );
+      
+      char charBuf[10];
+      String(LISTEN_PORT).toCharArray(charBuf, sizeof(charBuf));
+      udpClient.fastrprint(charBuf);
+      
+      udpClient.close();      
+  } 
+}
+
+void ConnectWifi()
+{
   /* Initialise the module */
   Serial.println(F("\nInitializing..."));
   if (!cc3000.begin())
@@ -93,33 +155,7 @@ void setup(void)
   // Start listening for connections
   lightStrandServer.begin();
   
-  Serial.println(F("Listening for connections..."));  
-  
-  Serial.println(F("Resetting Light Strand"));
-
-  SendIRCommand( 0 );
-}
-
-void loop(void)
-{
-  // Try to get a client which is connected.
-  Adafruit_CC3000_ClientRef client = lightStrandServer.available();
-  if (client) 
-  {
-     Serial.println(F("Client connected"));
-    
-     // Check if there is data available to read.
-     if (client.available() > 0) 
-     {
-       // Read a byte and write it to all clients.
-       uint8_t code = client.read();
-       Serial.print(F("Client sent \"")); Serial.print(code,DEC); Serial.println(F("\""));
-       
-       SendIRCommand( code );       
-       
-       //client.close();
-     }
-  }
+  Serial.println(F("Listening for connections...")); 
 }
 
 void SendIRCommand(uint8_t code)

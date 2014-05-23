@@ -12,18 +12,21 @@
     <RelativeLayout android:layout_width="fill_parent"
         android:orientation="horizontal"
         android:layout_height="48dip"
+        android:visibility="gone"
         android:layout_weight="0.2">
         
         <Button android:id="@+id/buttonconnection"
             android:background="@drawable/disconnect"
             android:layout_alignParentRight="true"
+            android:visibility="gone"
             android:layout_width="48dip"
             android:layout_height="48dip"/>
         
         <EditText android:id="@+id/port" 
 	        android:inputType="number"
 	        android:hint="@string/hintport"
-	        android:layout_width="100dip"	        
+	        android:layout_width="100dip"
+	        android:visibility="gone"	        
 	        android:layout_toLeftOf="@id/buttonconnection"
 	        android:layout_height="48dip"/>
         
