@@ -91,7 +91,7 @@ void loop(void)
     if (BTLEserial.available())
     { 
       uint8_t tmp = BTLEserial.read();
-      int code = ((int)tmp) - 48;
+      int code = ((int)tmp);// - 48;
       Serial.print(F("Client sent \"")); Serial.print(code,DEC); Serial.println(F("\""));
       //Serial.print(F("Client sent \"")); Serial.print(code); Serial.println(F("\""));
        

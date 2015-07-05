@@ -1,0 +1,222 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"    
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/fragmentcontrol_vertical_margin"
+    android:paddingLeft="@dimen/fragmentcontrol_horizontal_margin"
+    android:paddingRight="@dimen/fragmentcontrol_horizontal_margin"
+    android:paddingTop="@dimen/fragmentcontrol_vertical_margin"    
+    android:weightSum="1.0">
+
+    
+    <LinearLayout android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:layout_weight="0.2"
+               android:weightSum="1.0">
+        
+           <ImageView android:id="@+id/button_brightnessup"
+               android:src="@drawable/button_state_brightness_up"
+               android:contentDescription="@string/button_brightness_down"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_brightnessdown"
+               android:src="@drawable/button_state_brightness_down"
+               android:contentDescription="@string/button_brightness_up"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_off"
+               android:contentDescription="@string/button_off"
+               android:src="@drawable/button_state_off"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_on"
+               android:contentDescription="@string/button_on"
+               android:layout_weight="0.166"
+               android:src="@drawable/button_state_on"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_white"
+               android:contentDescription="@string/button_white"
+               android:src="@drawable/button_state_white"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_flash"
+               android:src="@drawable/button_state_flash"
+               android:contentDescription="@string/button_flash"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>                     
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:layout_weight="0.2"
+               android:weightSum="1.0">
+        
+        <ImageView android:id="@+id/button_red"
+               android:src="@drawable/button_state_red"
+               android:contentDescription="@string/button_red"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+        
+		<ImageView android:id="@+id/button_red_orange"
+               android:src="@drawable/button_state_red_orange"
+               android:contentDescription="@string/button_red_orange"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+		
+		<ImageView android:id="@+id/button_orange"
+               android:src="@drawable/button_state_orange"
+               android:contentDescription="@string/button_orange"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+		
+		<ImageView android:id="@+id/button_orange_yellow"
+               android:src="@drawable/button_state_orange_yellow"
+               android:contentDescription="@string/button_orange_yellow"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+		
+		<ImageView android:id="@+id/button_yellow"
+               android:src="@drawable/button_state_yellow"
+               android:contentDescription="@string/button_yellow"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+				                                        
+        <ImageView android:id="@+id/button_strobe"
+               android:src="@drawable/button_state_strobe"
+               android:contentDescription="@string/button_strobe"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>   
+           
+        
+    </LinearLayout>  
+    
+    <LinearLayout android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:layout_weight="0.2"
+               android:weightSum="1.0">
+        
+        
+        <ImageView android:id="@+id/button_green"
+               android:src="@drawable/button_state_green"
+               android:contentDescription="@string/button_green"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+        
+           
+           <ImageView android:id="@+id/button_light_green"
+               android:src="@drawable/button_state_light_green"
+               android:contentDescription="@string/button_light_green"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_green_blue"
+               android:src="@drawable/button_state_green_blue"
+               android:contentDescription="@string/button_green_blue"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           
+           <ImageView android:id="@+id/button_light_blue"
+               android:src="@drawable/button_state_light_blue"
+               android:contentDescription="@string/button_light_blue"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_medium_blue"
+               android:src="@drawable/button_state_medium_blue"
+               android:contentDescription="@string/button_medium_blue"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>  
+               
+           <ImageView android:id="@+id/button_fade"
+               android:src="@drawable/button_state_fade"
+               android:contentDescription="@string/button_fade"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+        
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="fill_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:layout_weight="0.2"
+               android:weightSum="1.0">
+        
+        <ImageView android:id="@+id/button_blue"
+               android:src="@drawable/button_state_blue"
+               android:contentDescription="@string/button_blue"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+        
+           <ImageView android:id="@+id/button_dark_blue"
+               android:src="@drawable/button_state_dark_blue"
+               android:contentDescription="@string/button_dark_blue"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           
+           <ImageView android:id="@+id/button_dark_purple"
+               android:src="@drawable/button_state_dark_purple"
+               android:contentDescription="@string/button_dark_purple"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_medium_purple"
+               android:src="@drawable/button_state_medium_purple"
+               android:contentDescription="@string/button_medium_purple"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_light_purple"
+               android:src="@drawable/button_state_light_purple"
+               android:contentDescription="@string/button_light_purple"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           <ImageView android:id="@+id/button_smooth"
+               android:contentDescription="@string/button_smooth"
+               android:src="@drawable/button_state_smooth"
+               android:layout_weight="0.166"
+               android:layout_width="48dip"
+               android:layout_height="48dip"/>
+           
+           
+        
+    </LinearLayout>
+    
+    
+
+</LinearLayout>
