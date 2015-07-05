@@ -44,7 +44,7 @@ public class LSClient_BLE implements IClient
     protected Handler           mHandler;
     protected BluetoothDevice   mRemoteBlutToothDevice;
     protected BluetoothGatt     mBlueToothServerGATT;
-
+    protected boolean           mShouldStartDiscovery;
     private static final long   SCAN_PERIOD = 10000;
     // These were taken from Adafruits site here: https://learn.adafruit.com/getting-started-with-the-nrf8001-bluefruit-le-breakout/adding-app-support
     private static ParcelUuid   ServiceUUID             = ParcelUuid.fromString("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
@@ -105,6 +105,7 @@ public class LSClient_BLE implements IClient
                     mScanning = false;
                     leScanner.stopScan(null);
 
+                    mShouldStartDiscovery = false;
                     mRemoteBlutToothDevice = result.getDevice();
                     mBlueToothServerGATT = mRemoteBlutToothDevice.connectGatt(mActivity, true, new BluetoothGattCallback()
                     {
@@ -115,7 +116,15 @@ public class LSClient_BLE implements IClient
                             {
                                 case BluetoothProfile.STATE_CONNECTED:
                                     connectListner.OnConnectionSuccess();
-                                    mBlueToothServerGATT.discoverServices();
+
+                                    if (mBlueToothServerGATT == null)
+                                    {
+                                        mShouldStartDiscovery = true;
+                                    }
+                                    else
+                                    {
+                                        mBlueToothServerGATT.discoverServices();
+                                    }
                                     mIsConnected = true;
                                     break;
                                 case BluetoothProfile.STATE_DISCONNECTED:
@@ -151,7 +160,15 @@ public class LSClient_BLE implements IClient
                             }
                         }
                     });
+
+                    if (mShouldStartDiscovery)
+                    {
+                        mShouldStartDiscovery = false;
+                        mBlueToothServerGATT.discoverServices();
+                    }
                 }
+
+
 
                 @Override
                 public void onScanFailed(int errorCode)
